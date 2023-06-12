@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+class ExpenseModel {
+  String cost;
+  int id;
+  int price;
+  ExpenseModel({required this.id, required this.cost, required this.price});
+}
+
 void main() {
   runApp(MyApp());
 }
@@ -16,9 +23,78 @@ class _MyAppState extends State<MyApp> {
 
   final priceController = TextEditingController();
 
-  void showCost() {
-    var showCost = costController;
+  final idController = TextEditingController();
+  List<ExpenseModel> data = [
+    ExpenseModel(
+      id: 1,
+      cost: "water",
+      price: 3000,
+    ),
+  ];
+
+  void updateData() {
+    int id = int.parse(idController.text);
+    String cost = costController.text;
+    int price = int.parse(priceController.text);
+
+    ExpenseModel existingData = data.firstWhere((element) => element.id == id,
+        orElse: () => ExpenseModel(id: 0, cost: '', price: 0));
+
+    if (existingData != null) {
+      setState(() {
+        existingData.cost = cost;
+        existingData.price = price;
+      });
+    } else {
+      setState(() {
+        data.add(
+          ExpenseModel(
+            id: id,
+            cost: cost,
+            price: price,
+          ),
+        );
+      });
+    }
   }
+
+  void addData() {
+    setState(() {
+      data.add(
+        ExpenseModel(
+          id: int.parse(idController.text),
+          cost: costController.text,
+          price: int.parse(idController.text),
+        ),
+      );
+      idController.clear();
+      costController.clear();
+      priceController.clear();
+    });
+  }
+
+  void deleteData(int index) {
+    setState(
+      () {
+        data.removeAt(index);
+      },
+    );
+  }
+
+  int valueTotal() {
+    int result = 0;
+    for (int i = 0; i < data.length; i++) {
+      result += data[i].price;
+      print(result);
+    }
+    return result;
+  }
+
+//show function
+  // void showCost() {
+  //   var valueCost = costController.text;
+  //   var valuePrice = priceController.text;
+  // }
 
   // This widget is the root of your application.
   @override
@@ -27,84 +103,136 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text("qwerty"),
+          title: Text("Test02"),
         ),
         backgroundColor: Colors.white,
         body: Padding(
           padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text("cost"),
-              ),
-              TextField(
-                controller: costController,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text("price"),
-              ),
-              TextField(
-                controller: priceController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextButton(
-                onPressed: () {
-                  print("object");
-                },
-                child: Text("Add"),
-                style: ButtonStyle(backgroundColor: null),
-              ),
-              Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  decoration: InputDecoration(labelText: "Enter ID"),
+                  controller: idController,
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: "Enter cost"),
+                  controller: costController,
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: "Enter price"),
+                  controller: priceController,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("cost: ${costController}"),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("price: ${priceController}"),
+                    TextButton(
+                      onPressed: () {
+                        addData();
+                        //  valueTotal();
+                      },
+                      child: Text("Add"),
+                      style: ButtonStyle(backgroundColor: null),
                     ),
                     SizedBox(
-                      width: 300,
-                      height: 100,
+                      width: 20,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        updateData();
+                      },
+                      child: Text("Update"),
+                      style: ButtonStyle(backgroundColor: null),
                     ),
                   ],
                 ),
-                color: Colors.amber,
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Card(
-                  child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Column(
-                      //  mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text("qwerty"),
+                Column(
+                  children: List.generate(
+                    data.length,
+                    (index) => Card(
+                      color: Colors.amber,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("cost: ${data[index].id}"),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("cost: ${data[index].cost}"),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text("price: ${data[index].price}"),
+                                ),
+                                //SizedBox(),
+                              ],
+                            ),
+                            Align(
+                              // alignment: Alignment.bottomRight,
+                              child: IconButton(
+                                  onPressed: () {
+                                    deleteData(index);
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
+                                  )),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                idController.text = data[index].id.toString();
+                                costController.text = data[index].cost;
+                                priceController.text =
+                                    data[index].price.toString();
+                              },
+                              icon: Icon(Icons.edit),
+                            )
+                          ],
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text("qwerty1"),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                  color: Colors.amber,
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 50,
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Card(
+                    child: SizedBox(
+                      width: 200,
+                      height: 100,
+                      child: Column(
+                        //  mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text("Total: ${valueTotal()}"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    color: Colors.amber,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
