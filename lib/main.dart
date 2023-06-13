@@ -24,6 +24,8 @@ class _MyAppState extends State<MyApp> {
   final priceController = TextEditingController();
 
   final idController = TextEditingController();
+
+  final SearchController = TextEditingController();
   List<ExpenseModel> data = [
     ExpenseModel(
       id: 1,
@@ -31,6 +33,13 @@ class _MyAppState extends State<MyApp> {
       price: 3000,
     ),
   ];
+  List<ExpenseModel> foundUsers = [];
+  @override
+  initState() {
+    // at the beginning, all users are shown
+    foundUsers = data;
+    super.initState();
+  }
 
   void updateData() {
     int id = int.parse(idController.text);
@@ -56,6 +65,14 @@ class _MyAppState extends State<MyApp> {
         );
       });
     }
+  }
+
+  void filterSearch(String enteredKeyword) {}
+
+  void clearData() {
+    idController.clear();
+    costController.clear();
+    priceController.clear();
   }
 
   void addData() {
@@ -85,7 +102,7 @@ class _MyAppState extends State<MyApp> {
     int result = 0;
     for (int i = 0; i < data.length; i++) {
       result += data[i].price;
-      print(result);
+      //  print(result);
     }
     return result;
   }
@@ -123,6 +140,10 @@ class _MyAppState extends State<MyApp> {
                   decoration: InputDecoration(labelText: "Enter price"),
                   controller: priceController,
                 ),
+                TextField(
+                  decoration: InputDecoration(labelText: "Search"),
+                  onChanged: (value) => null,
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -144,6 +165,13 @@ class _MyAppState extends State<MyApp> {
                         updateData();
                       },
                       child: Text("Update"),
+                      style: ButtonStyle(backgroundColor: null),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        clearData();
+                      },
+                      child: Text("Clear"),
                       style: ButtonStyle(backgroundColor: null),
                     ),
                   ],
@@ -199,7 +227,13 @@ class _MyAppState extends State<MyApp> {
                                     data[index].price.toString();
                               },
                               icon: Icon(Icons.edit),
-                            )
+                            ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     clearData();
+                            //   },
+                            //   icon: Icon(Icons.reset_tv),
+                            // ),
                           ],
                         ),
                       ),
