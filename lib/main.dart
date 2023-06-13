@@ -33,13 +33,6 @@ class _MyAppState extends State<MyApp> {
       price: 3000,
     ),
   ];
-  List<ExpenseModel> foundUsers = [];
-  @override
-  initState() {
-    // at the beginning, all users are shown
-    foundUsers = data;
-    super.initState();
-  }
 
   void updateData() {
     int id = int.parse(idController.text);
@@ -67,7 +60,22 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void filterSearch(String enteredKeyword) {}
+  List<ExpenseModel> search(String value) {
+    List<ExpenseModel> result = data
+        .where(
+          (item) => item.cost.toLowerCase().contains(
+                value.toLowerCase(),
+              ),
+        )
+        .toList();
+    return result;
+    //must loop in another class
+    // List<ExpenseModel> qwert = search("w");
+    // for (int i = 0; i < data.length; i++) {
+    //   print("i=${i}");
+    //   print("id=${data[i].cost}");
+    // }
+  }
 
   void clearData() {
     idController.clear();
@@ -107,13 +115,6 @@ class _MyAppState extends State<MyApp> {
     return result;
   }
 
-//show function
-  // void showCost() {
-  //   var valueCost = costController.text;
-  //   var valuePrice = priceController.text;
-  // }
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -142,7 +143,8 @@ class _MyAppState extends State<MyApp> {
                 ),
                 TextField(
                   decoration: InputDecoration(labelText: "Search"),
-                  onChanged: (value) => null,
+                  controller: SearchController,
+                  onChanged: (value) => search,
                 ),
                 SizedBox(
                   height: 20,
@@ -167,11 +169,24 @@ class _MyAppState extends State<MyApp> {
                       child: Text("Update"),
                       style: ButtonStyle(backgroundColor: null),
                     ),
+                    SizedBox(
+                      width: 20,
+                    ),
                     TextButton(
                       onPressed: () {
                         clearData();
                       },
                       child: Text("Clear"),
+                      style: ButtonStyle(backgroundColor: null),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        search(SearchController.text);
+                      },
+                      child: Text("Search"),
                       style: ButtonStyle(backgroundColor: null),
                     ),
                   ],
