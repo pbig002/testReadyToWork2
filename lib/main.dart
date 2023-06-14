@@ -60,15 +60,28 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  List<ExpenseModel> search(String value) {
-    List<ExpenseModel> result = data
-        .where(
-          (item) => item.cost.toLowerCase().contains(
-                value.toLowerCase(),
-              ),
-        )
-        .toList();
-    return result;
+  void search(String value) {
+    List<ExpenseModel> result = [];
+    if (value.isEmpty) {
+      result = data;
+    } else {
+      result = data
+          .where(
+              (item) => item.cost.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      data = result;
+    });
+
+    // List<ExpenseModel> result = data
+    //     .where(
+    //       (item) => item.cost.toLowerCase().contains(
+    //             value.toLowerCase(),
+    //           ),
+    //     )
+    //     .toList();
+    // return result;
     //must loop in another class
     // List<ExpenseModel> qwert = search("w");
     // for (int i = 0; i < data.length; i++) {
@@ -144,7 +157,7 @@ class _MyAppState extends State<MyApp> {
                 TextField(
                   decoration: InputDecoration(labelText: "Search"),
                   controller: SearchController,
-                  onChanged: (value) => search,
+                  onChanged: (value) => search(SearchController.text),
                 ),
                 SizedBox(
                   height: 20,
