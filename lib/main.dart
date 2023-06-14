@@ -119,6 +119,17 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void handleAddData(String idText, String cost, String priceText) {
+    int? id = int.tryParse(idText);
+    int? price = int.tryParse(priceText);
+
+    if (id == null || cost.isEmpty || price == null) {
+      print("data is null ");
+    } else {
+      addData();
+    }
+  }
+
   int valueTotal() {
     int result = 0;
     for (int i = 0; i < data.length; i++) {
@@ -166,8 +177,8 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        addData();
-                        //  valueTotal();
+                        handleAddData(idController.text, costController.text,
+                            priceController.text);
                       },
                       child: Text("Add"),
                       style: ButtonStyle(backgroundColor: null),
