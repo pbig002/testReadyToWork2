@@ -26,20 +26,29 @@ class _MyAppState extends State<MyApp> {
   final idController = TextEditingController();
 
   final SearchController = TextEditingController();
-  List<ExpenseModel> data = [
+  List<ExpenseModel> allData = [
     ExpenseModel(
       id: 1,
       cost: "water",
       price: 3000,
     ),
   ];
+  //for  show data when search
+  List<ExpenseModel> foundData = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    foundData = allData;
+    super.initState();
+  }
 
   void updateData() {
     int id = int.parse(idController.text);
     String cost = costController.text;
     int price = int.parse(priceController.text);
 
-    ExpenseModel existingData = data.firstWhere((element) => element.id == id,
+    ExpenseModel existingData = allData.firstWhere(
+        (element) => element.id == id,
         orElse: () => ExpenseModel(id: 0, cost: '', price: 0));
 
     if (existingData != null) {
@@ -49,7 +58,7 @@ class _MyAppState extends State<MyApp> {
       });
     } else {
       setState(() {
-        data.add(
+        allData.add(
           ExpenseModel(
             id: id,
             cost: cost,
@@ -63,31 +72,16 @@ class _MyAppState extends State<MyApp> {
   void search(String value) {
     List<ExpenseModel> result = [];
     if (value.isEmpty) {
-      result = data;
+      result = allData;
     } else {
-      result = data
+      result = allData
           .where(
               (item) => item.cost.toLowerCase().contains(value.toLowerCase()))
           .toList();
     }
     setState(() {
-      data = result;
+      foundData = result;
     });
-
-    // List<ExpenseModel> result = data
-    //     .where(
-    //       (item) => item.cost.toLowerCase().contains(
-    //             value.toLowerCase(),
-    //           ),
-    //     )
-    //     .toList();
-    // return result;
-    //must loop in another class
-    // List<ExpenseModel> qwert = search("w");
-    // for (int i = 0; i < data.length; i++) {
-    //   print("i=${i}");
-    //   print("id=${data[i].cost}");
-    // }
   }
 
   void clearData() {
@@ -98,7 +92,7 @@ class _MyAppState extends State<MyApp> {
 
   void addData() {
     setState(() {
-      data.add(
+      allData.add(
         ExpenseModel(
           id: int.parse(idController.text),
           cost: costController.text,
@@ -114,7 +108,7 @@ class _MyAppState extends State<MyApp> {
   void deleteData(int index) {
     setState(
       () {
-        data.removeAt(index);
+        allData.removeAt(index);
       },
     );
   }
@@ -132,8 +126,8 @@ class _MyAppState extends State<MyApp> {
 
   int valueTotal() {
     int result = 0;
-    for (int i = 0; i < data.length; i++) {
-      result += data[i].price;
+    for (int i = 0; i < foundData.length; i++) {
+      result += foundData[i].price;
       //  print(result);
     }
     return result;
@@ -183,17 +177,17 @@ class _MyAppState extends State<MyApp> {
                       child: Text("Add"),
                       style: ButtonStyle(backgroundColor: null),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     TextButton(
                       onPressed: () {
                         updateData();
                       },
-                      child: Text("Update"),
                       style: ButtonStyle(backgroundColor: null),
+                      child: const Text("Update"),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     TextButton(
@@ -203,21 +197,22 @@ class _MyAppState extends State<MyApp> {
                       child: Text("Clear"),
                       style: ButtonStyle(backgroundColor: null),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
-                    TextButton(
-                      onPressed: () {
-                        search(SearchController.text);
-                      },
-                      child: Text("Search"),
-                      style: ButtonStyle(backgroundColor: null),
-                    ),
+                    //search for click
+                    // TextButton(
+                    //   onPressed: () {
+                    //     search(SearchController.text);
+                    //   },
+                    //   child: Text("Search"),
+                    //   style: ButtonStyle(backgroundColor: null),
+                    // ),
                   ],
                 ),
                 Column(
                   children: List.generate(
-                    data.length,
+                    foundData.length,
                     (index) => Card(
                       color: Colors.amber,
                       child: Padding(
@@ -229,21 +224,22 @@ class _MyAppState extends State<MyApp> {
                               children: [
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text("cost: ${data[index].id}"),
+                                  child: Text("cost: ${foundData[index].id}"),
                                 ),
                                 const SizedBox(
                                   height: 8,
                                 ),
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text("cost: ${data[index].cost}"),
+                                  child: Text("cost: ${foundData[index].cost}"),
                                 ),
                                 const SizedBox(
                                   height: 8,
                                 ),
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text("price: ${data[index].price}"),
+                                  child:
+                                      Text("price: ${foundData[index].price}"),
                                 ),
                                 //SizedBox(),
                               ],
@@ -260,10 +256,11 @@ class _MyAppState extends State<MyApp> {
                             ),
                             IconButton(
                               onPressed: () {
-                                idController.text = data[index].id.toString();
-                                costController.text = data[index].cost;
+                                idController.text =
+                                    foundData[index].id.toString();
+                                costController.text = foundData[index].cost;
                                 priceController.text =
-                                    data[index].price.toString();
+                                    foundData[index].price.toString();
                               },
                               icon: Icon(Icons.edit),
                             ),
