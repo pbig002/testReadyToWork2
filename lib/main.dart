@@ -8,7 +8,9 @@ class ExpenseModel {
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    home: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -118,7 +120,24 @@ class _MyAppState extends State<MyApp> {
     int? price = int.tryParse(priceText);
 
     if (id == null || cost.isEmpty || price == null) {
-      print("data is null ");
+      print("data is null");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Please enter valid data."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     } else {
       addData();
     }
